@@ -17,6 +17,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Mejora la respuesta táctil */
         }
         .radio-label input:checked + .radio-custom {
             background-color: #3b82f6;
@@ -39,7 +40,7 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        button, .radio-label {
+        button, .radio-label, select {
             cursor: pointer;
         }
     </style>
@@ -57,21 +58,24 @@
 
             <!-- Controles de Entrada -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <div>
-                    <label for="productName" class="block text-sm font-medium text-gray-300 mb-2">Nombre del Producto</label>
-                    <select id="productName" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none transition appearance-none" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236B7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.4-5.4-13z%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 0.65em auto; padding-right: 2.5rem;">
+                 <div class="md:col-span-2">
+                    <label for="productNameSelect" class="block text-sm font-medium text-gray-300 mb-2">Nombre del Producto</label>
+                    <select id="productNameSelect" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none transition appearance-none" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236B7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.4-5.4-13z%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 0.65em auto; padding-right: 2.5rem;">
                         <option value="" disabled selected>Selecciona un producto...</option>
                         <option value="Pollo entero">Pollo entero</option>
                         <option value="Trutro">Trutro</option>
+                        <option value="Tuto corto">Tuto corto</option>
+                        <option value="Tuto largo">Tuto largo</option>
                         <option value="Alitas de pollo">Alitas de pollo</option>
                         <option value="Pechuga entera">Pechuga entera</option>
                         <option value="Pechugas deshuesadas">Pechugas deshuesadas</option>
                         <option value="Patas de pollo">Patas de pollo</option>
                         <option value="Tutos de ala">Tutos de ala</option>
-                        <option value="Tuto corto">Tuto corto</option>
                         <option value="Panitas de pollo">Panitas de pollo</option>
                         <option value="Contre">Contre</option>
+                        <option value="otro">Otro (escribir manualmente)...</option>
                     </select>
+                    <input type="text" id="customProductName" placeholder="Escribe el nombre del nuevo producto" class="hidden mt-2 w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                 </div>
                 <div>
                     <label for="totalWeight" class="block text-sm font-medium text-gray-300 mb-2">Peso Total (kg)</label>
@@ -165,155 +169,261 @@
     </div>
 
     <script>
-        // --- Estado de la Aplicación ---
-        let products = [];
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Estado de la Aplicación ---
+            let products = [];
 
-        // --- Selectores del DOM ---
-        const productNameInput = document.getElementById('productName');
-        const totalWeightInput = document.getElementById('totalWeight');
-        const boxCountInput = document.getElementById('boxCount');
-        const customMultiplierInput = document.getElementById('customMultiplier');
-        const addProductBtn = document.getElementById('addProductBtn');
-        const productListDiv = document.getElementById('productList');
-        const totalNetWeightResult = document.getElementById('totalNetWeightResult');
-        const emptyListMessage = document.getElementById('emptyListMessage');
-        const clearListBtn = document.getElementById('clearListBtn');
-        const exportCsvBtn = document.getElementById('exportCsvBtn');
-        const previewArea = document.getElementById('previewArea');
-        const previewNetWeightResult = document.getElementById('previewNetWeightResult');
-        const installAppBtn = document.getElementById('installAppBtn');
+            // --- Selectores del DOM ---
+            const productNameSelect = document.getElementById('productNameSelect');
+            const customProductNameInput = document.getElementById('customProductName');
+            const totalWeightInput = document.getElementById('totalWeight');
+            const boxCountInput = document.getElementById('boxCount');
+            const customMultiplierInput = document.getElementById('customMultiplier');
+            const addProductBtn = document.getElementById('addProductBtn');
+            const productListDiv = document.getElementById('productList');
+            const totalNetWeightResult = document.getElementById('totalNetWeightResult');
+            const emptyListMessage = document.getElementById('emptyListMessage');
+            const clearListBtn = document.getElementById('clearListBtn');
+            const exportCsvBtn = document.getElementById('exportCsvBtn');
+            const previewArea = document.getElementById('previewArea');
+            const previewNetWeightResult = document.getElementById('previewNetWeightResult');
+            const installAppBtn = document.getElementById('installAppBtn');
 
-        const confirmationModal = document.getElementById('confirmationModal');
-        const modalMessage = document.getElementById('modalMessage');
-        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
-        const modalCancelBtn = document.getElementById('modalCancelBtn');
-        const alertModal = document.getElementById('alertModal');
-        const alertMessage = document.getElementById('alertMessage');
-        const alertOkBtn = document.getElementById('alertOkBtn');
+            const confirmationModal = document.getElementById('confirmationModal');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+            const modalCancelBtn = document.getElementById('modalCancelBtn');
+            const alertModal = document.getElementById('alertModal');
+            const alertMessage = document.getElementById('alertMessage');
+            const alertOkBtn = document.getElementById('alertOkBtn');
 
-        // --- Funciones de Modal ---
-        let confirmCallback = null;
-        function showConfirmationModal(message, onConfirm) {
-            modalMessage.textContent = message;
-            confirmCallback = onConfirm;
-            confirmationModal.classList.remove('hidden');
-        }
-        function hideConfirmationModal() {
-            confirmationModal.classList.add('hidden');
-            confirmCallback = null;
-        }
-        function showAlertModal(message) {
-            alertMessage.textContent = message;
-            alertModal.classList.remove('hidden');
-        }
-        function hideAlertModal() {
-            alertModal.classList.add('hidden');
-        }
+            // --- Funciones de Modal ---
+            let confirmCallback = null;
+            function showConfirmationModal(message, onConfirm) {
+                modalMessage.textContent = message;
+                confirmCallback = onConfirm;
+                confirmationModal.classList.remove('hidden');
+            }
+            function hideConfirmationModal() {
+                confirmationModal.classList.add('hidden');
+                confirmCallback = null;
+            }
+            function showAlertModal(message) {
+                alertMessage.textContent = message;
+                alertModal.classList.remove('hidden');
+            }
+            function hideAlertModal() {
+                alertModal.classList.add('hidden');
+            }
 
-        // --- Funciones de la App ---
-        function performCalculation() {
-            const totalWeight = parseFloat(totalWeightInput.value) || 0;
-            const boxCount = parseInt(boxCountInput.value) || 0;
-            let multiplier = 0;
-            const selectedMultiplierRadio = document.querySelector('input[name="multiplier"]:checked');
-            if (selectedMultiplierRadio) {
-                const selectedMultiplier = selectedMultiplierRadio.value;
-                 if (selectedMultiplier === 'custom') {
-                    multiplier = parseFloat(customMultiplierInput.value) || 0;
+            // --- Funciones de la App ---
+            function performCalculation() {
+                const totalWeight = parseFloat(totalWeightInput.value) || 0;
+                const boxCount = parseInt(boxCountInput.value) || 0;
+                let multiplier = 0;
+                const selectedMultiplierRadio = document.querySelector('input[name="multiplier"]:checked');
+                if (selectedMultiplierRadio) {
+                    const selectedMultiplier = selectedMultiplierRadio.value;
+                     if (selectedMultiplier === 'custom') {
+                        multiplier = parseFloat(customMultiplierInput.value) || 0;
+                    } else {
+                        multiplier = parseFloat(selectedMultiplier);
+                    }
+                }
+                const totalBoxWeight = boxCount * multiplier;
+                const netWeight = totalWeight - totalBoxWeight;
+                return { totalBoxWeight, netWeight, multiplier };
+            }
+            
+            function updatePreview() {
+                const totalWeight = parseFloat(totalWeightInput.value) || 0;
+                if (totalWeight > 0) {
+                    const { netWeight } = performCalculation();
+                    previewNetWeightResult.textContent = `${netWeight.toFixed(2)} kg`;
+                    previewArea.classList.remove('hidden');
                 } else {
-                    multiplier = parseFloat(selectedMultiplier);
+                    previewArea.classList.add('hidden');
+                    previewNetWeightResult.textContent = `0.00 kg`;
                 }
             }
-            const totalBoxWeight = boxCount * multiplier;
-            const netWeight = totalWeight - totalBoxWeight;
-            return { totalBoxWeight, netWeight, multiplier };
-        }
-        
-        function updatePreview() {
-            const totalWeight = parseFloat(totalWeightInput.value) || 0;
-            if (totalWeight > 0) {
-                const { netWeight } = performCalculation();
-                previewNetWeightResult.textContent = `${netWeight.toFixed(2)} kg`;
-                previewArea.classList.remove('hidden');
-            } else {
-                previewArea.classList.add('hidden');
-                previewNetWeightResult.textContent = `0.00 kg`;
-            }
-        }
 
-        function renderProductList() {
-            if (products.length === 0) {
-                productListDiv.innerHTML = '';
-                emptyListMessage.style.display = 'block';
-            } else {
-                emptyListMessage.style.display = 'none';
-                productListDiv.innerHTML = products.map((product, index) => `
-                    <div class="bg-gray-700 p-4 rounded-lg animate-fade-in">
-                        <div class="flex justify-between items-start">
-                            <p class="font-bold text-lg text-white">${product.name}</p>
-                            <div class="flex items-center space-x-4">
-                                <p class="font-semibold text-xl text-green-400">${product.netWeight.toFixed(2)} kg</p>
-                                <button class="btn-delete w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white" onclick="deleteProduct(${index})">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg>
-                                </button>
+            function renderProductList() {
+                if (products.length === 0) {
+                    productListDiv.innerHTML = '';
+                    emptyListMessage.style.display = 'block';
+                } else {
+                    emptyListMessage.style.display = 'none';
+                    productListDiv.innerHTML = products.map((product, index) => `
+                        <div class="bg-gray-700 p-4 rounded-lg animate-fade-in">
+                            <div class="flex justify-between items-start">
+                                <p class="font-bold text-lg text-white">${product.name}</p>
+                                <div class="flex items-center space-x-4">
+                                    <p class="font-semibold text-xl text-green-400">${product.netWeight.toFixed(2)} kg</p>
+                                    <button class="btn-delete w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white" data-index="${index}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-600 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 text-sm">
+                                <div><span class="text-gray-400">P. Total:</span> <strong class="text-white">${product.totalWeight} kg</strong></div>
+                                <div><span class="text-gray-400">Cajas:</span> <strong class="text-white">${product.boxCount}</strong></div>
+                                <div><span class="text-gray-400">Tara:</span> <strong class="text-white">${product.boxWeight.toFixed(2)} kg</strong></div>
+                                <div><span class="text-gray-400">Multiplicador:</span> <strong class="text-white">${product.multiplier}</strong></div>
                             </div>
                         </div>
-                        <div class="mt-3 pt-3 border-t border-gray-600 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 text-sm">
-                            <div><span class="text-gray-400">P. Total:</span> <strong class="text-white">${product.totalWeight} kg</strong></div>
-                            <div><span class="text-gray-400">Cajas:</span> <strong class="text-white">${product.boxCount}</strong></div>
-                            <div><span class="text-gray-400">Tara:</span> <strong class="text-white">${product.boxWeight.toFixed(2)} kg</strong></div>
-                            <div><span class="text-gray-400">Multiplicador:</span> <strong class="text-white">${product.multiplier}</strong></div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            const totalNetWeight = products.reduce((sum, product) => sum + product.netWeight, 0);
-            totalNetWeightResult.textContent = `${totalNetWeight.toFixed(2)} kg`;
-        }
-
-        function addProduct() {
-            const name = productNameInput.value;
-            const totalWeight = parseFloat(totalWeightInput.value);
-            const boxCount = parseInt(boxCountInput.value);
-
-            if (!name || isNaN(totalWeight) || isNaN(boxCount) || totalWeight <= 0 || boxCount < 0) {
-                showAlertModal("Por favor, completa el nombre, peso y cantidad de cajas con valores válidos.");
-                return;
+                    `).join('');
+                }
+                const totalNetWeight = products.reduce((sum, product) => sum + product.netWeight, 0);
+                totalNetWeightResult.textContent = `${totalNetWeight.toFixed(2)} kg`;
             }
 
-            const { totalBoxWeight, netWeight, multiplier } = performCalculation();
+            function addProduct() {
+                let name = '';
+                if (productNameSelect.value === 'otro') {
+                    name = customProductNameInput.value.trim();
+                    if (!name) {
+                        showAlertModal("Por favor, escribe el nombre del nuevo producto.");
+                        return;
+                    }
+                } else {
+                    name = productNameSelect.value;
+                }
+                
+                const totalWeight = parseFloat(totalWeightInput.value);
+                const boxCount = parseInt(boxCountInput.value);
+
+                if (!name || isNaN(totalWeight) || isNaN(boxCount) || totalWeight <= 0 || boxCount < 0) {
+                    showAlertModal("Por favor, completa el nombre, peso y cantidad de cajas con valores válidos.");
+                    return;
+                }
+
+                const { totalBoxWeight, netWeight, multiplier } = performCalculation();
+                
+                products.push({ name, totalWeight, boxCount, boxWeight: totalBoxWeight, netWeight, multiplier });
+
+                renderProductList();
+                // Reset fields
+                productNameSelect.selectedIndex = 0;
+                customProductNameInput.value = '';
+                customProductNameInput.classList.add('hidden');
+                totalWeightInput.value = '';
+                boxCountInput.value = '';
+                customMultiplierInput.value = '';
+                totalWeightInput.focus();
+                updatePreview();
+            }
+
+            function exportToCSV() {
+                if (products.length === 0) {
+                    showAlertModal("No hay productos en la lista para exportar.");
+                    return;
+                }
+                const headers = ['Nombre Producto', 'Peso Total (kg)', 'Cant. Cajas', 'Multiplicador', 'Peso Cajas Restado (kg)', 'Peso Neto (kg)'];
+                let csvContent = headers.join(',') + '\n';
+                products.forEach(p => {
+                    const row = [`"${p.name}"`, p.totalWeight, p.boxCount, p.multiplier, p.boxWeight.toFixed(2), p.netWeight.toFixed(2)];
+                    csvContent += row.join(',') + '\n';
+                });
+                csvContent += '\n';
+                const totalNetWeight = products.reduce((sum, p) => sum + p.netWeight, 0);
+                const totalRow = ['', '', '', '', 'TOTAL NETO:', totalNetWeight.toFixed(2)];
+                csvContent += totalRow.join(',') + '\n';
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                if (link.download !== undefined) {
+                    const url = URL.createObjectURL(blob);
+                    const date = new Date().toISOString().slice(0, 10);
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `reporte_tara_${date}.csv`);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
             
-            products.push({ name, totalWeight, boxCount, boxWeight: totalBoxWeight, netWeight, multiplier });
-
-            renderProductList();
-            productNameInput.selectedIndex = 0;
-            totalWeightInput.value = '';
-            boxCountInput.value = '';
-            customMultiplierInput.value = '';
-            totalWeightInput.focus();
-            updatePreview();
-        }
-
-        function exportToCSV() {
-            if (products.length === 0) {
-                showAlertModal("No hay productos en la lista para exportar.");
-                return;
-            }
-            const headers = ['Nombre Producto', 'Peso Total (kg)', 'Cant. Cajas', 'Multiplicador', 'Peso Cajas Restado (kg)', 'Peso Neto (kg)'];
-            let csvContent = headers.join(',') + '\n';
-            products.forEach(p => {
-                const row = [`"${p.name}"`, p.totalWeight, p.boxCount, p.multiplier, p.boxWeight.toFixed(2), p.netWeight.toFixed(2)];
-                csvContent += row.join(',') + '\n';
+            // --- Event Listeners ---
+            addProductBtn.addEventListener('click', addProduct);
+            
+            clearListBtn.addEventListener('click', () => {
+               showConfirmationModal("¿Estás seguro de que quieres limpiar toda la lista?", () => {
+                   products = [];
+                   renderProductList();
+               });
             });
-            csvContent += '\n';
-            const totalNetWeight = products.reduce((sum, p) => sum + p.netWeight, 0);
-            const totalRow = ['', '', '', '', 'TOTAL NETO:', totalNetWeight.toFixed(2)];
-            csvContent += totalRow.join(',') + '\n';
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            if (link.download !== undefined) {
-                const url = URL.createObjectURL(blob);
-                const date = new Date().toISOString().slice(0, 10);
-                link.setAttribute("href", url);
-               
+            exportCsvBtn.addEventListener('click', exportToCSV);
+
+            customMultiplierInput.addEventListener('focus', () => {
+                document.getElementById('multiplier_custom_radio').checked = true;
+            });
+
+            modalConfirmBtn.addEventListener('click', () => {
+                if (confirmCallback) confirmCallback();
+                hideConfirmationModal();
+            });
+            modalCancelBtn.addEventListener('click', hideConfirmationModal);
+            alertOkBtn.addEventListener('click', hideAlertModal);
+
+            [totalWeightInput, boxCountInput, customMultiplierInput].forEach(el => el.addEventListener('input', updatePreview));
+            document.querySelectorAll('input[name="multiplier"]').forEach(radio => radio.addEventListener('change', updatePreview));
+            
+            productNameSelect.addEventListener('change', () => {
+                if (productNameSelect.value === 'otro') {
+                    customProductNameInput.classList.remove('hidden');
+                    customProductNameInput.focus();
+                } else {
+                    customProductNameInput.classList.add('hidden');
+                }
+            });
+
+            productListDiv.addEventListener('click', (e) => {
+                const deleteButton = e.target.closest('.btn-delete');
+                if (deleteButton) {
+                    const indexToDelete = parseInt(deleteButton.dataset.index, 10);
+                    products.splice(indexToDelete, 1);
+                    renderProductList();
+                }
+            });
+
+            // --- Lógica PWA (Instalación y Service Worker) ---
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./sw.js')
+                        .then(registration => console.log('Service Worker: Registrado con éxito'))
+                        .catch(error => console.log('Service Worker: Error en el registro', error));
+                });
+            }
+
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installAppBtn.classList.remove('hidden');
+            });
+
+            installAppBtn.addEventListener('click', (e) => {
+                installAppBtn.classList.add('hidden');
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('El usuario aceptó instalar la app');
+                    } else {
+                        console.log('El usuario rechazó instalar la app');
+                    }
+                    deferredPrompt = null;
+                });
+            });
+
+            window.addEventListener('appinstalled', (evt) => {
+              console.log('Aplicación instalada con éxito.');
+            });
+
+            // --- Inicialización ---
+            renderProductList();
+        });
+    </script>
+</body>
+</html>
+
