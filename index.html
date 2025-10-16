@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Tara Múltiple</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .radio-label input:checked + .radio-custom {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        .radio-label input:checked + .radio-custom .radio-dot {
+            transform: scale(1);
+        }
+        .btn-delete {
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .btn-delete:hover {
+            background-color: #ef4444; /* red-500 */
+            transform: scale(1.1);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        button, .radio-label {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-4">
+
+    <div class="w-full max-w-2xl mx-auto space-y-8">
+        <!-- Calculadora -->
+        <div class="bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 space-y-6">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold text-white">Calculadora de Tara</h1>
+                <p class="text-gray-400 mt-2">Agrega productos para calcular el peso neto total.</p>
+            </div>
+
+            <!-- Controles de Entrada -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div>
+                    <label for="productName" class="block text-sm font-medium text-gray-300 mb-2">Nombre del Producto</label>
+                    <select id="productName" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none transition appearance-none" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236B7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.4-5.4-13z%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 0.65em auto; padding-right: 2.5rem;">
+                        <option value="" disabled selected>Selecciona un producto...</option>
+                        <option value="Pollo entero">Pollo entero</option>
+                        <option value="Trutro">Trutro</option>
+                        <option value="Alitas de pollo">Alitas de pollo</option>
+                        <option value="Pechuga entera">Pechuga entera</option>
+                        <option value="Pechugas deshuesadas">Pechugas deshuesadas</option>
+                        <option value="Patas de pollo">Patas de pollo</option>
+                        <option value="Tutos de ala">Tutos de ala</option>
+                        <option value="Panitas de pollo">Panitas de pollo</option>
+                        <option value="Contre">Contre</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="totalWeight" class="block text-sm font-medium text-gray-300 mb-2">Peso Total (kg)</label>
+                    <input type="number" id="totalWeight" placeholder="Ej: 150.5" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                </div>
+                <div>
+                    <label for="boxCount" class="block text-sm font-medium text-gray-300 mb-2">Cantidad de Cajas</label>
+                    <input type="number" id="boxCount" placeholder="Ej: 25" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                </div>
+                 <!-- Selección de Multiplicador -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-300 mb-3">Valor por Caja (Multiplicador)</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <label class="radio-label flex items-center bg-gray-700 rounded-lg p-3 transition hover:bg-gray-600">
+                            <input type="radio" name="multiplier" value="1.2" class="hidden" id="multiplier1_2" checked>
+                            <span class="radio-custom w-5 h-5 border-2 border-gray-500 rounded-full flex items-center justify-center mr-3 transition"><span class="radio-dot w-2.5 h-2.5 bg-white rounded-full transform scale-0 transition"></span></span>
+                            <span class="font-semibold">Caja Normal (1.2)</span>
+                        </label>
+                        <label class="radio-label flex items-center bg-gray-700 rounded-lg p-3 transition hover:bg-gray-600">
+                            <input type="radio" name="multiplier" value="0.8" class="hidden" id="multiplier0_8">
+                            <span class="radio-custom w-5 h-5 border-2 border-gray-500 rounded-full flex items-center justify-center mr-3 transition"><span class="radio-dot w-2.5 h-2.5 bg-white rounded-full transform scale-0 transition"></span></span>
+                            <span class="font-semibold">Caja Especial (0.8)</span>
+                        </label>
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="radio-label flex items-center bg-gray-700 rounded-lg p-3 transition hover:bg-gray-600 has-[:focus-within]:ring-2 has-[:focus-within]:ring-blue-500">
+                                <input type="radio" name="multiplier" value="custom" class="hidden" id="multiplier_custom_radio">
+                                <span class="radio-custom w-5 h-5 border-2 border-gray-500 rounded-full flex items-center justify-center mr-3 transition"><span class="radio-dot w-2.5 h-2.5 bg-white rounded-full transform scale-0 transition"></span></span>
+                                <input type="number" id="customMultiplier" placeholder="Otro valor" class="w-full bg-transparent text-white focus:outline-none placeholder-gray-400">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Previsualización del Cálculo -->
+            <div id="previewArea" class="bg-gray-700/50 rounded-xl p-4 flex justify-between items-center hidden animate-fade-in">
+                <p class="text-lg font-medium text-gray-300">Peso Neto (actual)</p>
+                <p id="previewNetWeightResult" class="text-2xl font-bold text-blue-400">0.00 kg</p>
+            </div>
+
+            <!-- Botón para Agregar -->
+            <button id="addProductBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg hover:shadow-blue-600/50">
+                Agregar Producto a la Lista
+            </button>
+        </div>
+
+        <!-- Lista de Productos y Resumen -->
+        <div class="bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <h2 class="text-2xl font-bold">Lista de Productos</h2>
+                 <div class="flex items-center gap-2">
+                    <button id="exportCsvBtn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                        Exportar a CSV
+                    </button>
+                    <button id="clearListBtn" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">Limpiar Lista</button>
+                 </div>
+            </div>
+            
+            <div id="productList" class="space-y-3">
+                <!-- Los productos se agregarán aquí -->
+                <p id="emptyListMessage" class="text-center text-gray-400 py-8">Aún no has agregado productos.</p>
+            </div>
+
+            <hr class="border-gray-700 !my-6">
+
+            <!-- Resumen Total -->
+            <div class="bg-gray-900/50 rounded-xl p-4 flex justify-between items-center">
+                <p class="text-lg font-medium text-gray-300">Peso Neto Total</p>
+                <p id="totalNetWeightResult" class="text-3xl font-bold text-green-400">0.00 kg</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-gray-700 rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
+            <p id="modalMessage" class="text-lg mb-6"></p>
+            <div class="flex justify-center space-x-4">
+                <button id="modalCancelBtn" class="px-6 py-2 rounded-lg bg-gray-600 hover:bg-gray-500 transition">Cancelar</button>
+                <button id="modalConfirmBtn" class="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white transition">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Alerta -->
+    <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-gray-700 rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
+            <p id="alertMessage" class="text-lg mb-6"></p>
+            <div class="flex justify-center">
+                <button id="alertOkBtn" class="px-8 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Estado de la Aplicación ---
+        let products = [];
+
+        // --- Selectores del DOM ---
+        const productNameInput = document.getElementById('productName');
+        const totalWeightInput = document.getElementById('totalWeight');
+        const boxCountInput = document.getElementById('boxCount');
+        const customMultiplierInput = document.getElementById('customMultiplier');
+        const addProductBtn = document.getElementById('addProductBtn');
+        const productListDiv = document.getElementById('productList');
+        const totalNetWeightResult = document.getElementById('totalNetWeightResult');
+        const emptyListMessage = document.getElementById('emptyListMessage');
+        const clearListBtn = document.getElementById('clearListBtn');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const previewArea = document.getElementById('previewArea');
+        const previewNetWeightResult = document.getElementById('previewNetWeightResult');
+
+        // --- Selectores del DOM (Modal) ---
+        const confirmationModal = document.getElementById('confirmationModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+        const modalCancelBtn = document.getElementById('modalCancelBtn');
+        const alertModal = document.getElementById('alertModal');
+        const alertMessage = document.getElementById('alertMessage');
+        const alertOkBtn = document.getElementById('alertOkBtn');
+
+        // --- Funciones de Modal ---
+        let confirmCallback = null;
+
+        function showConfirmationModal(message, onConfirm) {
+            modalMessage.textContent = message;
+            confirmCallback = onConfirm;
+            confirmationModal.classList.remove('hidden');
+        }
+
+        function hideConfirmationModal() {
+            confirmationModal.classList.add('hidden');
+            confirmCallback = null;
+        }
+
+        function showAlertModal(message) {
+            alertMessage.textContent = message;
+            alertModal.classList.remove('hidden');
+        }
+
+        function hideAlertModal() {
+            alertModal.classList.add('hidden');
+        }
+
+        // --- Funciones de la App ---
+        function performCalculation() {
+            const totalWeight = parseFloat(totalWeightInput.value) || 0;
+            const boxCount = parseInt(boxCountInput.value) || 0;
+            let multiplier = 0;
+            const selectedMultiplierRadio = document.querySelector('input[name="multiplier"]:checked');
+            if (selectedMultiplierRadio) {
+                const selectedMultiplier = selectedMultiplierRadio.value;
+                 if (selectedMultiplier === 'custom') {
+                    multiplier = parseFloat(customMultiplierInput.value) || 0;
+                } else {
+                    multiplier = parseFloat(selectedMultiplier);
+                }
+            }
+            const totalBoxWeight = boxCount * multiplier;
+            const netWeight = totalWeight - totalBoxWeight;
+            return { totalBoxWeight, netWeight, multiplier };
+        }
+        
+        function updatePreview() {
+            const totalWeight = parseFloat(totalWeightInput.value) || 0;
+
+            if (totalWeight > 0) {
+                const { netWeight } = performCalculation();
+                previewNetWeightResult.textContent = `${netWeight.toFixed(2)} kg`;
+                previewArea.classList.remove('hidden');
+            } else {
+                previewArea.classList.add('hidden');
+                previewNetWeightResult.textContent = `0.00 kg`;
+            }
+        }
+
+        function renderProductList() {
+            if (products.length === 0) {
+                productListDiv.innerHTML = '';
+                emptyListMessage.style.display = 'block';
+            } else {
+                emptyListMessage.style.display = 'none';
+                productListDiv.innerHTML = products.map((product, index) => `
+                    <div class="bg-gray-700 p-4 rounded-lg animate-fade-in">
+                        <div class="flex justify-between items-start">
+                            <p class="font-bold text-lg text-white">${product.name}</p>
+                            <div class="flex items-center space-x-4">
+                                <p class="font-semibold text-xl text-green-400">${product.netWeight.toFixed(2)} kg</p>
+                                <button class="btn-delete w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white" onclick="deleteProduct(${index})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-gray-600 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 text-sm">
+                            <div><span class="text-gray-400">P. Total:</span> <strong class="text-white">${product.totalWeight} kg</strong></div>
+                            <div><span class="text-gray-400">Cajas:</span> <strong class="text-white">${product.boxCount}</strong></div>
+                            <div><span class="text-gray-400">Tara:</span> <strong class="text-white">${product.boxWeight.toFixed(2)} kg</strong></div>
+                            <div><span class="text-gray-400">Multiplicador:</span> <strong class="text-white">${product.multiplier}</strong></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            const totalNetWeight = products.reduce((sum, product) => sum + product.netWeight, 0);
+            totalNetWeightResult.textContent = `${totalNetWeight.toFixed(2)} kg`;
+        }
+
+        function addProduct() {
+            const name = productNameInput.value;
+            const totalWeight = parseFloat(totalWeightInput.value);
+            const boxCount = parseInt(boxCountInput.value);
+
+            if (!name || isNaN(totalWeight) || isNaN(boxCount) || totalWeight <= 0 || boxCount < 0) {
+                showAlertModal("Por favor, completa el nombre, peso y cantidad de cajas con valores válidos.");
+                return;
+            }
+
+            const { totalBoxWeight, netWeight, multiplier } = performCalculation();
+            
+            products.push({
+                name,
+                totalWeight,
+                boxCount,
+                boxWeight: totalBoxWeight,
+                netWeight,
+                multiplier
+            });
+
+            renderProductList();
+            productNameInput.selectedIndex = 0; // Reset dropdown
+            totalWeightInput.value = '';
+            boxCountInput.value = '';
+            customMultiplierInput.value = '';
+            totalWeightInput.focus(); // Move focus to the next field
+            updatePreview(); // Oculta la previsualización después de agregar
+        }
+
+        function exportToCSV() {
+            if (products.length === 0) {
+                showAlertModal("No hay productos en la lista para exportar.");
+                return;
+            }
+
+            const headers = ['Nombre Producto', 'Peso Total (kg)', 'Cant. Cajas', 'Multiplicador', 'Peso Cajas Restado (kg)', 'Peso Neto (kg)'];
+            let csvContent = headers.join(',') + '\n';
+
+            products.forEach(product => {
+                const row = [
+                    `"${product.name}"`, // Enclose name in quotes to handle commas
+                    product.totalWeight,
+                    product.boxCount,
+                    product.multiplier,
+                    product.boxWeight.toFixed(2),
+                    product.netWeight.toFixed(2)
+                ];
+                csvContent += row.join(',') + '\n';
+            });
+            
+            csvContent += '\n'; // Add a blank line for spacing
+            const totalNetWeight = products.reduce((sum, product) => sum + product.netWeight, 0);
+            const totalRow = ['', '', '', '', 'TOTAL NETO:', totalNetWeight.toFixed(2)];
+            csvContent += totalRow.join(',') + '\n';
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                const date = new Date().toISOString().slice(0, 10);
+                link.setAttribute("href", url);
+                link.setAttribute("download", `reporte_tara_${date}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        window.deleteProduct = function(index) {
+            products.splice(index, 1);
+            renderProductList();
+        }
+        
+        // --- Event Listeners (Mobile compatibility improved) ---
+        addProductBtn.onclick = addProduct;
+        
+        clearListBtn.onclick = () => {
+           showConfirmationModal("¿Estás seguro de que quieres limpiar toda la lista?", () => {
+               products = [];
+               renderProductList();
+           });
+        };
+
+        exportCsvBtn.onclick = exportToCSV;
+
+        customMultiplierInput.addEventListener('focus', () => {
+            document.getElementById('multiplier_custom_radio').checked = true;
+        });
+        
+        modalConfirmBtn.onclick = () => {
+            if (confirmCallback) confirmCallback();
+            hideConfirmationModal();
+        };
+        modalCancelBtn.onclick = hideConfirmationModal;
+        alertOkBtn.onclick = hideAlertModal;
+
+        // Listeners para la previsualización
+        totalWeightInput.addEventListener('input', updatePreview);
+        boxCountInput.addEventListener('input', updatePreview);
+        customMultiplierInput.addEventListener('input', updatePreview);
+        document.querySelectorAll('input[name="multiplier"]').forEach(radio => {
+            radio.addEventListener('change', updatePreview);
+        });
+
+
+        // --- Inicialización ---
+        renderProductList();
+    </script>
+</body>
+</html>
+
