@@ -370,12 +370,21 @@
             document.querySelectorAll('input[name="multiplier"]').forEach(radio => radio.addEventListener('change', updatePreview));
             
             productNameSelect.addEventListener('change', () => {
+                // Muestra u oculta el campo de texto para producto personalizado
                 if (productNameSelect.value === 'otro') {
                     customProductNameInput.classList.remove('hidden');
                     customProductNameInput.focus();
                 } else {
                     customProductNameInput.classList.add('hidden');
                 }
+
+                // Cambia automáticamente el multiplicador para "Pollo entero"
+                if (productNameSelect.value === 'Pollo entero') {
+                    document.getElementById('multiplier0_8').checked = true;
+                }
+                
+                // Actualiza la vista previa al cambiar el producto
+                updatePreview();
             });
 
             productListDiv.addEventListener('click', (e) => {
