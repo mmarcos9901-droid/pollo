@@ -14,6 +14,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -131,24 +136,26 @@
         <div class="bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 space-y-4">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <h2 class="text-2xl font-bold">Lista de Productos</h2>
-                 <div class="flex items-center gap-2 flex-wrap justify-center">
+                <div class="flex items-center gap-2 flex-wrap justify-center">
                     <button id="installAppBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition flex items-center gap-2 hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-phone" viewBox="0 0 16 16"><path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h6zM5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H5z"/><path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
-                        Instalar App
-                    </button>
-                    <button id="imprimirBtn" class="bg-gray-600 hover:bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg text-sm transition flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/></svg>
-                        Imprimir
-                    </button>
-                    <button id="exportCsvBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
-                        Exportar
+                        Instalar
                     </button>
                     <button id="clearListBtn" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">Limpiar</button>
-                 </div>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-gray-700">
+                <h3 class="text-center text-sm font-medium text-gray-300 mb-3">Opciones de Exportación</h3>
+                <div class="flex items-center gap-2 flex-wrap justify-center">
+                    <button id="downloadTxtBtn" title="Descargar Recibo (.txt)" class="bg-gray-600 hover:bg-gray-500 text-white font-semibold py-2 px-3 rounded-lg text-sm transition">Recibo (.txt)</button>
+                    <button id="downloadPdfBtn" title="Descargar como PDF" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg text-sm transition">PDF</button>
+                    <button id="downloadDocBtn" title="Descargar como Word (.doc)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg text-sm transition">Word (.doc)</button>
+                    <button id="downloadCsvBtn" title="Descargar como Excel (.csv)" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-lg text-sm transition">Excel (.csv)</button>
+                </div>
             </div>
             
-            <div id="productList" class="space-y-3">
+            <div id="productList" class="space-y-3 !mt-6">
                 <p id="emptyListMessage" class="text-center text-gray-400 py-8">Aún no has agregado productos.</p>
             </div>
 
@@ -219,8 +226,10 @@
             const totalNetWeightResult = document.getElementById('totalNetWeightResult');
             const emptyListMessage = document.getElementById('emptyListMessage');
             const clearListBtn = document.getElementById('clearListBtn');
-            const exportCsvBtn = document.getElementById('exportCsvBtn');
-            const imprimirBtn = document.getElementById('imprimirBtn');
+            const downloadTxtBtn = document.getElementById('downloadTxtBtn');
+            const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+            const downloadDocBtn = document.getElementById('downloadDocBtn');
+            const downloadCsvBtn = document.getElementById('downloadCsvBtn');
             const previewArea = document.getElementById('previewArea');
             const previewNetWeightResult = document.getElementById('previewNetWeightResult');
             const installAppBtn = document.getElementById('installAppBtn');
@@ -368,7 +377,43 @@
                 updatePreview();
             }
 
-            function exportToCSV() {
+            // --- Funciones de Exportación ---
+
+            function downloadTxt() {
+                if (products.length === 0) {
+                    showAlertModal("No hay productos para generar un recibo.");
+                    return;
+                }
+                const totalNetWeight = products.reduce((sum, p) => sum + p.netWeight, 0);
+                const now = new Date();
+                const dateTime = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+
+                let receiptText = "   Resumen de Tara - Super Pollo\n";
+                receiptText += "--------------------------------\n";
+                receiptText += `${dateTime}\n\n`;
+                
+                products.forEach(p => {
+                    const name = p.name.substring(0, 18).padEnd(18);
+                    const netWeight = `${p.netWeight.toFixed(2)}kg`.padStart(14);
+                    receiptText += `${name}${netWeight}\n`;
+                });
+                
+                receiptText += "--------------------------------\n";
+                const totalLabel = "TOTAL NETO:".padEnd(18);
+                const totalValue = `${totalNetWeight.toFixed(2)}kg`.padStart(14);
+                receiptText += `${totalLabel}${totalValue}\n`;
+                receiptText += "\n\n\n";
+
+                const blob = new Blob([receiptText], { type: 'text/plain;charset=utf-8;' });
+                const link = document.createElement("a");
+                const date = new Date().toISOString().slice(0, 10);
+                link.href = URL.createObjectURL(blob);
+                link.download = `recibo_tara_${date}.txt`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }
+
+            function downloadCsv() {
                 if (products.length === 0) {
                     showAlertModal("No hay productos en la lista para exportar.");
                     return;
@@ -386,16 +431,111 @@
 
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement("a");
-                if (link.download !== undefined) {
-                    const url = URL.createObjectURL(blob);
-                    const date = new Date().toISOString().slice(0, 10);
-                    link.setAttribute("href", url);
-                    link.setAttribute("download", `reporte_tara_${date}.csv`);
-                    link.style.visibility = 'hidden';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                const date = new Date().toISOString().slice(0, 10);
+                link.href = URL.createObjectURL(blob);
+                link.download = `reporte_tara_${date}.csv`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }
+
+            function downloadPdf() {
+                if (products.length === 0) {
+                    showAlertModal("No hay productos para exportar a PDF.");
+                    return;
                 }
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                const totalNetWeight = products.reduce((sum, p) => sum + p.netWeight, 0);
+                const now = new Date();
+                const dateTime = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+
+                doc.setFontSize(18);
+                doc.text("Resumen de Tara - Super Pollo", 14, 22);
+                doc.setFontSize(11);
+                doc.setTextColor(100);
+                doc.text(`Generado el: ${dateTime}`, 14, 30);
+
+                const tableColumn = ["Producto", "P. Total (kg)", "Cajas", "Tara (kg)", "P. Neto (kg)"];
+                const tableRows = [];
+
+                products.forEach(p => {
+                    const productData = [
+                        p.name,
+                        p.totalWeight.toFixed(2),
+                        p.boxCount,
+                        p.boxWeight.toFixed(2),
+                        p.netWeight.toFixed(2)
+                    ];
+                    tableRows.push(productData);
+                });
+
+                doc.autoTable({
+                    startY: 35,
+                    head: [tableColumn],
+                    body: tableRows,
+                    theme: 'grid',
+                    foot: [['', '', '', 'Total Neto:', totalNetWeight.toFixed(2)]],
+                    footStyles: { fontStyle: 'bold' }
+                });
+                
+                const date = new Date().toISOString().slice(0, 10);
+                doc.save(`reporte_tara_${date}.pdf`);
+            }
+
+            function downloadDoc() {
+                if (products.length === 0) {
+                    showAlertModal("No hay productos para exportar a DOC.");
+                    return;
+                }
+
+                const totalNetWeight = products.reduce((sum, p) => sum + p.netWeight, 0);
+                const now = new Date();
+                const dateTime = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+
+                let htmlContent = `
+                    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                    <head><meta charset='utf-8'><title>Resumen de Tara</title></head>
+                    <body>
+                        <h1>Resumen de Tara - Super Pollo</h1>
+                        <p>Generado el: ${dateTime}</p>
+                        <table border="1" style="width:100%; border-collapse: collapse; font-family: sans-serif;">
+                            <thead>
+                                <tr style="background-color: #f2f2f2;">
+                                    <th style="padding: 8px;">Producto</th>
+                                    <th style="padding: 8px;">P. Total (kg)</th>
+                                    <th style="padding: 8px;">Cant. Cajas</th>
+                                    <th style="padding: 8px;">Tara (kg)</th>
+                                    <th style="padding: 8px;">P. Neto (kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${products.map(p => `
+                                    <tr>
+                                        <td style="padding: 8px;">${p.name}</td>
+                                        <td style="padding: 8px;">${p.totalWeight.toFixed(2)}</td>
+                                        <td style="padding: 8px;">${p.boxCount}</td>
+                                        <td style="padding: 8px;">${p.boxWeight.toFixed(2)}</td>
+                                        <td style="padding: 8px;"><strong>${p.netWeight.toFixed(2)}</strong></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        <h2>Peso Neto Total: ${totalNetWeight.toFixed(2)} kg</h2>
+                    </body>
+                    </html>
+                `;
+
+                const blob = new Blob(['\ufeff', htmlContent], {
+                    type: 'application/msword'
+                });
+                
+                const date = new Date().toISOString().slice(0, 10);
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = `reporte_tara_${date}.doc`;
+                link.click();
+                URL.revokeObjectURL(link.href);
             }
 
             function shareOnWhatsApp() {
@@ -456,75 +596,6 @@
 
                 window.open(url, '_blank');
             }
-            
-            async function printViaBluetooth() {
-                if (!navigator.bluetooth) {
-                    showAlertModal('La función de Imprimir por Bluetooth no es compatible con este navegador. Prueba con Chrome en Android.');
-                    return;
-                }
-                if (products.length === 0) {
-                    showAlertModal("No hay productos para imprimir.");
-                    return;
-                }
-
-                try {
-                    showAlertModal('Buscando impresoras Bluetooth... Por favor, selecciona tu impresora.');
-                    const device = await navigator.bluetooth.requestDevice({
-                        acceptAllDevices: true,
-                        optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] // Serial Port Profile, común en impresoras
-                    });
-
-                    showAlertModal(`Conectando a ${device.name}...`);
-                    const server = await device.gatt.connect();
-                    
-                    // UUIDs comunes para impresoras térmicas. Se intenta con varios.
-                    const SERVICE_UUID = '000018f0-0000-1000-8000-00805f9b34fb';
-                    const CHARACTERISTIC_UUID = '00002af1-0000-1000-8000-00805f9b34fb';
-
-                    const service = await server.getPrimaryService(SERVICE_UUID);
-                    const characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
-                    
-                    showAlertModal('Preparando datos para imprimir...');
-
-                    // --- Formateo del Recibo para 58mm (aprox 32 caracteres) ---
-                    const totalNetWeight = products.reduce((sum, p) => sum + p.netWeight, 0);
-                    const now = new Date();
-                    const dateTime = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
-
-                    let printText = "   Resumen de Tara - Super Pollo\n";
-                    printText += "--------------------------------\n";
-                    printText += `${dateTime}\n\n`;
-                    
-                    products.forEach(p => {
-                        const name = p.name.substring(0, 18).padEnd(18); // Truncar y alinear nombre
-                        const netWeight = `${p.netWeight.toFixed(2)}kg`.padStart(14); // Alinear peso a la derecha
-                        printText += `${name}${netWeight}\n`;
-                    });
-                    
-                    printText += "--------------------------------\n";
-                    const totalLabel = "TOTAL NETO:".padEnd(18);
-                    const totalValue = `${totalNetWeight.toFixed(2)}kg`.padStart(14);
-                    printText += `${totalLabel}${totalValue}\n`;
-                    printText += "\n\n\n"; // Espacio para cortar el papel
-
-                    // --- Enviar datos a la impresora ---
-                    const encoder = new TextEncoder();
-                    const data = encoder.encode(printText);
-
-                    // Escribir en chunks para evitar límites de tamaño
-                    const chunkSize = 50; 
-                    for (let i = 0; i < data.length; i += chunkSize) {
-                        const chunk = data.slice(i, i + chunkSize);
-                        await characteristic.writeValueWithoutResponse(chunk);
-                    }
-                    
-                    showAlertModal('¡Impresión enviada con éxito!');
-
-                } catch (error) {
-                    console.error('Error de Bluetooth:', error);
-                    showAlertModal(`Error al imprimir: ${error.message}. Asegúrate de que la impresora esté encendida y vinculada.`);
-                }
-            }
 
 
             // --- Event Listeners ---
@@ -537,8 +608,11 @@
                });
             });
 
-            exportCsvBtn.addEventListener('click', exportToCSV);
-            imprimirBtn.addEventListener('click', printViaBluetooth);
+            downloadTxtBtn.addEventListener('click', downloadTxt);
+            downloadPdfBtn.addEventListener('click', downloadPdf);
+            downloadDocBtn.addEventListener('click', downloadDoc);
+            downloadCsvBtn.addEventListener('click', downloadCsv);
+
             shareWhatsappBtn.addEventListener('click', shareOnWhatsApp);
             
             whatsappContactSelect.addEventListener('change', () => {
